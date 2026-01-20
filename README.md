@@ -1,97 +1,163 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# OrderDesk - Offline-Capable Task/Order Management App
 
-# Getting Started
+A React Native application demonstrating offline-first architecture with automatic synchronization capabilities. Built with TypeScript, Redux Toolkit, and Redux Thunk.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+- ✅ **List Screen**: Display orders with title, amount, created date, and sync status
+- ✅ **Create Screen**: Form with validation (required fields, valid numbers)
+- ✅ **Edit Screen**: Edit existing records before they are synced
+- ✅ **Offline Support**: App works seamlessly without internet connectivity
+- ✅ **Auto Sync**: Automatically syncs pending records when network is restored
+- ✅ **Manual Retry**: Retry option for failed syncs
+- ✅ **Network Status**: Visual indicator when offline
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Technical Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **React Native** 0.83.1 with TypeScript
+- **Redux Toolkit** for state management
+- **Redux Thunk** for async operations
+- **React Navigation** (Native Stack) for navigation
+- **AsyncStorage** for local persistence
+- **NetInfo** for network detection
 
-```sh
-# Using npm
-npm start
+## Project Structure
 
-# OR using Yarn
-yarn start
+```
+orderDesk/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── OrderCard.tsx
+│   │   └── NetworkStatusBar.tsx
+│   ├── hooks/               # Custom React hooks
+│   │   └── useNetworkStatus.ts
+│   ├── navigation/          # Navigation configuration
+│   │   └── AppNavigator.tsx
+│   ├── screens/             # Screen components
+│   │   ├── OrderListScreen.tsx
+│   │   ├── CreateOrderScreen.tsx
+│   │   └── EditOrderScreen.tsx
+│   ├── services/            # Business logic services
+│   │   ├── storage.ts       # AsyncStorage wrapper
+│   │   └── sync.ts          # Sync service (mock API)
+│   ├── store/               # Redux store configuration
+│   │   ├── index.ts         # Store setup
+│   │   ├── hooks.ts         # Typed Redux hooks
+│   │   ├── slices/          # Redux slices
+│   │   │   └── ordersSlice.ts
+│   │   └── thunks.ts        # Async thunks
+│   └── types/               # TypeScript types
+│       └── index.ts
+├── App.tsx                  # Root component
+└── README.md
 ```
 
-## Step 2: Build and run your app
+## Setup Instructions
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Prerequisites
 
-### Android
+- Node.js >= 20
+- React Native development environment set up
+- iOS Simulator (for iOS) or Android Emulator (for Android)
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
-```
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-### iOS
+2. **For iOS (macOS only):**
+   ```bash
+   cd ios && pod install && cd ..
+   ```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3. **Start Metro bundler:**
+   ```bash
+   npm start
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+4. **Run on iOS:**
+   ```bash
+   npm run ios
+   ```
 
-```sh
-bundle install
-```
+5. **Run on Android:**
+   ```bash
+   npm run android
+   ```
 
-Then, and every time you update your native dependencies, run:
+## How It Works
 
-```sh
-bundle exec pod install
-```
+### Offline-First Architecture
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+1. **Local Storage**: All orders are persisted locally using AsyncStorage
+2. **Sync Status**: Each order has a sync status:
+   - `PENDING`: Created offline, waiting to sync
+   - `SYNCED`: Successfully synced to server
+   - `FAILED`: Sync attempt failed
 
-```sh
-# Using npm
-npm run ios
+3. **Auto Sync**: When network is restored, pending orders are automatically synced
+4. **Manual Retry**: Failed syncs can be retried manually via the "Retry Sync" button
 
-# OR using Yarn
-yarn ios
-```
+### State Management
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+- **Redux Toolkit**: Centralized state management
+- **Redux Thunk**: Handles async operations (API calls, storage operations)
+- **Actions**: Synchronous state updates
+- **Thunks**: Async operations with side effects
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Network Detection
 
-## Step 3: Modify your app
+- Uses `@react-native-community/netinfo` to detect network status
+- Automatically triggers sync when network is restored
+- Shows visual indicator when offline
 
-Now that you have successfully run the app, let's make changes!
+## Usage
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+1. **Create Order**: Tap "Create Order" button, fill in title and amount, submit
+2. **View Orders**: All orders are displayed in a list with sync status badges
+3. **Edit Order**: Tap on an unsynced order to edit (synced orders cannot be edited)
+4. **Sync**: Pending orders sync automatically when online, or use "Sync Now" button
+5. **Retry**: Failed syncs can be retried using the "Retry Sync" button on the order card
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Sync Service
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+The sync service (`src/services/sync.ts`) is currently a mock implementation that:
+- Simulates network delay (1 second)
+- Has a 10% failure rate for testing purposes
+- Returns synced orders with updated status
 
-## Congratulations! :tada:
+In a production environment, replace this with actual API calls to your backend.
 
-You've successfully run and modified your React Native App. :partying_face:
+## Code Quality
 
-### Now what?
+- ✅ TypeScript for type safety
+- ✅ Clean folder structure
+- ✅ Reusable components
+- ✅ Custom hooks for network status
+- ✅ Proper error handling
+- ✅ Form validation
+- ✅ No console.logs in production code
+- ✅ Meaningful variable names and comments
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Git Commit History
 
-# Troubleshooting
+The project follows logical commit history:
+- Initial setup and dependencies
+- Core architecture (Redux, navigation, storage)
+- Feature implementation (screens, components)
+- Integration and polish
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Notes
 
-# Learn More
+- UI design is minimal and functional (as per requirements)
+- Focus is on clean code, proper architecture, and offline capabilities
+- Sync service is mocked for demonstration purposes
+- Error messages use default messages to preserve information
 
-To learn more about React Native, take a look at the following resources:
+## License
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Private project for demonstration purposes.
