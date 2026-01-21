@@ -6,14 +6,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigation/AppNavigator';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import {updateOrderAction} from '../../store/thunks';
+import {Button} from '../../components/Button';
 import {Input} from '../../components/Input';
 import {styles} from './styles';
 
@@ -99,57 +99,52 @@ export const EditOrderScreen: React.FC = () => {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.form}>
-          <Text style={styles.screenTitle}>Edit Order</Text>
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusLabel}>Status: </Text>
-            <Text style={styles.statusValue}>{order.syncStatus}</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.form}>
+            <Text style={styles.screenTitle}>Edit Order</Text>
+            <View style={styles.statusContainer}>
+              <Text style={styles.statusLabel}>Status: </Text>
+              <Text style={styles.statusValue}>{order.syncStatus}</Text>
+            </View>
+            <Input
+              label="Title"
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Enter order title"
+              error={errors.title}
+              autoCapitalize="words"
+            />
+            <Input
+              label="Amount"
+              value={amount}
+              onChangeText={setAmount}
+              placeholder="0.00"
+              keyboardType="decimal-pad"
+              error={errors.amount}
+            />
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Cancel"
+                onPress={() => navigation.goBack()}
+                variant="secondary"
+                style={styles.button}
+              />
+              <Button
+                title="Update Order"
+                onPress={handleSubmit}
+                loading={isSubmitting}
+                disabled={isSubmitting}
+                variant="primary"
+                style={styles.button}
+              />
+            </View>
           </View>
-          <Input
-            label="Title"
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Enter order title"
-            error={errors.title}
-            autoCapitalize="words"
-          />
-          <Input
-            label="Amount"
-            value={amount}
-            onChangeText={setAmount}
-            placeholder="0.00"
-            keyboardType="decimal-pad"
-            error={errors.amount}
-          />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={() => navigation.goBack()}
-              activeOpacity={0.7}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                styles.submitButton,
-                isSubmitting && styles.submitButtonDisabled,
-              ]}
-              onPress={handleSubmit}
-              disabled={isSubmitting}
-              activeOpacity={0.7}>
-              {isSubmitting ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.submitButtonText}>Update Order</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };

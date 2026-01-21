@@ -5,14 +5,15 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigation/AppNavigator';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import {loadOrdersFromStorage, syncPendingOrders, retrySyncOrder} from '../../store/thunks';
+import {Button} from '../../components/Button';
 import {OrderCard} from '../../components/OrderCard';
 import {NetworkStatusBar} from '../../components/NetworkStatusBar';
 import {useNetworkStatus} from '../../hooks/useNetworkStatus';
@@ -77,73 +78,70 @@ export const OrderListScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <NetworkStatusBar />
-      <View style={styles.header}>
-        <Text style={styles.title}>Orders</Text>
-        {(pendingCount > 0 || failedCount > 0) && (
-          <View style={styles.syncInfo}>
-            {pendingCount > 0 && (
-              <Text style={styles.syncText}>{pendingCount} pending</Text>
-            )}
-            {failedCount > 0 && (
-              <Text style={[styles.syncText, styles.failedText]}>
-                {failedCount} failed
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <View style={styles.container}>
+        <NetworkStatusBar />
+        <View style={styles.header}>
+          <Text style={styles.title}>Orders</Text>
+          {(pendingCount > 0 || failedCount > 0) && (
+            <View style={styles.syncInfo}>
+              {pendingCount > 0 && (
+                <Text style={styles.syncText}>{pendingCount} pending</Text>
+              )}
+              {failedCount > 0 && (
+                <Text style={[styles.syncText, styles.failedText]}>
+                  {failedCount} failed
+                </Text>
+              )}
+            </View>
+          )}
+        </View>
+        <FlatList
+          data={items}
+          keyExtractor={item => item.id}
+          style={styles.list}
+          renderItem={({item}) => (
+            <OrderCard
+              order={item}
+              onPress={() => handleOrderPress(item)}
+              onRetry={
+                item.syncStatus === SyncStatus.FAILED
+                  ? () => handleRetrySync(item.id)
+                  : undefined
+              }
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No orders yet</Text>
+              <Text style={styles.emptySubtext}>
+                Create your first order to get started
               </Text>
-            )}
-          </View>
-        )}
+            </View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={isSyncing}
+              onRefresh={handleRefresh}
+              tintColor="#007AFF"
+            />
+          }
+        />
+        <View style={styles.footer}>
+          <Button title="Create Order" onPress={handleCreatePress} fullWidth />
+          {isConnected && pendingCount > 0 && (
+            <Button
+              title="Sync Now"
+              onPress={handleSyncNow}
+              disabled={isSyncing}
+              loading={isSyncing}
+              variant="success"
+              fullWidth
+            />
+          )}
+        </View>
       </View>
-      <FlatList
-        data={items}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <OrderCard
-            order={item}
-            onPress={() => handleOrderPress(item)}
-            onRetry={
-              item.syncStatus === SyncStatus.FAILED
-                ? () => handleRetrySync(item.id)
-                : undefined
-            }
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No orders yet</Text>
-            <Text style={styles.emptySubtext}>Create your first order to get started</Text>
-          </View>
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={isSyncing}
-            onRefresh={handleRefresh}
-            tintColor="#007AFF"
-          />
-        }
-      />
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleCreatePress}
-          activeOpacity={0.7}>
-          <Text style={styles.createButtonText}>Create Order</Text>
-        </TouchableOpacity>
-        {isConnected && pendingCount > 0 && (
-          <TouchableOpacity
-            style={[styles.syncButton, isSyncing && styles.syncButtonDisabled]}
-            onPress={handleSyncNow}
-            disabled={isSyncing}
-            activeOpacity={0.7}>
-            {isSyncing ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.syncButtonText}>Sync Now</Text>
-            )}
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };

@@ -30,7 +30,7 @@ export const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="OrderList"
           component={OrderListScreen}
-          options={{title: 'Orders'}}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name="CreateOrder"

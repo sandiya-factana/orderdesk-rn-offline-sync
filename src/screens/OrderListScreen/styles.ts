@@ -1,9 +1,16 @@
 import {StyleSheet} from 'react-native';
 
 export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+  },
+  list: {
+    flex: 1,
   },
   centerContainer: {
     flex: 1,
@@ -18,7 +25,9 @@ export const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#FFFFFF',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
   },
@@ -42,7 +51,7 @@ export const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 16,
   },
   emptyContainer: {
     alignItems: 'center',
@@ -60,52 +69,10 @@ export const styles = StyleSheet.create({
     color: '#999999',
   },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: '#FFFFFF',
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#E5E5E5',
     gap: 12,
-  },
-  createButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    width: '100%',
-  },
-  createButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  createButtonDisabled: {
-    backgroundColor: '#CCCCCC',
-    opacity: 0.6,
-  },
-  syncButton: {
-    backgroundColor: '#34C759',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    width: '100%',
-  },
-  syncButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  syncButtonDisabled: {
-    backgroundColor: '#CCCCCC',
-    opacity: 0.6,
   },
 });
